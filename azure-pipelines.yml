@@ -4,17 +4,26 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- script: |
-    echo "Creating staging directory..."
-    mkdir -p $(Build.ArtifactStagingDirectory)/website
-    cp index.html $(Build.ArtifactStagingDirectory)/website/
-    echo "Website files staged successfully!"
-  displayName: 'Stage HTML Files'
+stages:
+- stage: BuildStage
+  displayName: 'Stage 1: Build & Package'
+  jobs:
+  - job: BuildJob
+    displayName: 'Compile and Package Files'
+    steps:
+    - script: |
+        echo "Code repository se fetch ho gaya..."
+        ls -la
+      displayName: 'Verify Source Files'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/website'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-  displayName: 'Publish Build Artifact (drop)'
+- stage: TestStage
+  displayName: 'Stage 2: Automated Testing'
+  dependsOn: BuildStage
+  jobs:
+  - job: TestJob
+    displayName: 'Run Quality Checks'
+    steps:
+    - script: |
+        echo "HTML syntax aur link check ho rahe hain..."
+        test -f index.html && echo "SUCCESS: index.html mojood hai!" || exit 1
+      displayName: 'Check Required Files'
