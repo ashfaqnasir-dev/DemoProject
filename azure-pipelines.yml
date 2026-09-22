@@ -18,5 +18,3 @@ steps:
     ArtifactName: 'drop'
     publishLocation: 'Container'
   displayName: 'Publish Build Artifact (drop)'
-- script: exit 1
-  displayName: 'Simulate Failure'
